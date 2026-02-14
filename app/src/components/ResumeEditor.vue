@@ -89,7 +89,7 @@
         if (!name) {
           return ''
         }
-        return `/sunny/${encodeURIComponent(name)}`
+        return `sunny/${encodeURIComponent(name)}`
       },
       startSlideshow: function () {
         if (!this.photos || !this.photos.length) {
