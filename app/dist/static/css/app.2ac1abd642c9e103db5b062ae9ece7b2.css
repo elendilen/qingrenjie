@@ -19,6 +19,22 @@ html[data-v-bd26cd6c] {
   -webkit-animation: flip 2s;
           animation: flip 2s;
 }
+.gallery-main-link[data-v-3539023c] {
+  width: 100%;
+  height: 100%;
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+.fade-enter-active[data-v-3539023c],
+.fade-leave-active[data-v-3539023c] {
+  -webkit-transition: opacity .25s ease;
+  transition: opacity .25s ease;
+}
+.fade-enter[data-v-3539023c],
+.fade-leave-to[data-v-3539023c] {
+  opacity: 0;
+}
 @-webkit-keyframes flip {
 from {
     opacity: 0;
