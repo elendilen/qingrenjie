@@ -62,6 +62,9 @@ app.use(hotMiddleware)
 var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
 app.use(staticPath, express.static('./static'))
 
+// serve photos under repo root: /sunny
+app.use('/sunny', express.static(path.resolve(__dirname, '../../sunny')))
+
 var uri = 'http://localhost:' + port
 
 devMiddleware.waitUntilValid(function () {
@@ -76,6 +79,13 @@ module.exports = app.listen(port, function (err) {
 
   // when env is testing, don't need open it
   if (autoOpenBrowser && process.env.NODE_ENV !== 'testing') {
-    opn(uri)
+    try {
+      var p = opn(uri)
+      if (p && typeof p.catch === 'function') {
+        p.catch(function () {})
+      }
+    } catch (e) {
+      // ignore: browser may not be available (e.g. headless Linux)
+    }
   }
 })

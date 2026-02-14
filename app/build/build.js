@@ -32,6 +32,11 @@ webpack(webpackConfig, function (err, stats) {
     chunkModules: false
   }) + '\n\n')
 
+  // Copy photos so /sunny/* is available in dist
+  var sunnyDistPath = path.join(config.build.assetsRoot, 'sunny')
+  shell.rm('-rf', sunnyDistPath)
+  shell.cp('-R', '../sunny', sunnyDistPath)
+
   console.log(chalk.cyan('  Build complete.\n'))
   console.log(chalk.yellow(
     '  Tip: built files are meant to be served over an HTTP server.\n' +

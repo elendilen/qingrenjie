@@ -1,13 +1,21 @@
 <template>
     <div id="app">
         <StyleEditor ref="styleEditor" :code="currentStyle"></StyleEditor>
-        <ResumeEditor ref="resumeEditor" :markdown="currentMarkdown" :enableHtml="enableHtml"></ResumeEditor>
+        <ResumeEditor
+            ref="resumeEditor"
+            :markdown="currentMarkdown"
+            :enableHtml="enableHtml"
+            :photos="photoNames"
+            :galleryTitle="galleryTitle"
+            :gallerySubtitle="gallerySubtitle"
+        ></ResumeEditor>
     </div>
 </template>
 <script>
 import StyleEditor from './components/StyleEditor'
 import ResumeEditor from './components/ResumeEditor'
 import './assets/reset.css'
+const meetDate = '2025-08-02'
 let isPc = (function() {
     var userAgentInfo = navigator.userAgent;
     var Agents = ["Android", "iPhone",
@@ -29,7 +37,7 @@ let getDateDiff = function(startDate, endDate) {
     var dates = Math.abs((startTime - endTime)) / (1000 * 60 * 60 * 24);
     return dates;
 }
-document.title += getDateDiff((new Date()).getFullYear() + '-' + ((new Date()).getMonth() + 1) + '-' + (new Date()).getDate(), '2016-09-15') + 1 + '天';
+document.title = 'Hi，Sunny！' + (getDateDiff((new Date()).getFullYear() + '-' + ((new Date()).getMonth() + 1) + '-' + (new Date()).getDate(), meetDate) + 1) + ' 天';
 export default {
     name: 'app',
     components: {
@@ -43,13 +51,12 @@ export default {
             enableHtml: false,
             fullStyle: [
                 `/*
-* Hi。宝贝！
-* 这么久了。还没和宝贝说过我的工作呢！
-* 我是个前端工程师。俗称程序员。网页相关。
-* 如这个页面。就是个什么也没有的网页。
-* 我的工作就是给这种空白的页面加点儿东西。
-* 嗯。说起来手机和电脑还得区分一下。
-* 你现在用的是。。。${isPc ? '电脑' : '手机'}
+* Hi，Sunny！
+* 这是一张会自动写字的小小网页。
+* 我把想说的话，藏在代码里。
+* 先把页面打扮得舒服一点。
+* 顺便根据设备做个适配。
+* 你现在用的是：${isPc ? '电脑' : '手机'}
 */
 
 /* 首先给所有元素加上过渡效果 */
@@ -57,12 +64,12 @@ export default {
   -webkit-transition: all .3s;
   transition: all .3s;
 }
-/* 白色背景太单调了。来点背景 */
+/* 背景别太单调 */
 html {
   color: rgb(222,222,222);
   background: rgb(0,43,54); 
 }
-/* 文字太近了 */
+/* 文字别挤在一起 */
 .styleEditor {
   padding: .5em;
   border: 1px solid;
@@ -72,7 +79,7 @@ html {
   font-size: 14px;
   line-height:1.5;
 }
-/* 这些代码颜色都一样。加点儿高亮区别来 */
+/* 这些代码颜色都一样。加点高亮 */
 .token.selector{ color: rgb(133,153,0) }
 .token.property{ color: rgb(187,137,0) }
 .token.punctuation{ color: yellow }
@@ -109,15 +116,14 @@ html{
   ${ isPc ? '-webkit-transform: rotateY(-10deg) translateZ(-100px) ;transform: rotateY(-10deg) translateZ(-100px) ;' : '-webkit-transform: rotateX(10deg) translateZ(-100px) ;transform: rotateX(10deg) translateZ(-100px) ;' }
     ${ isPc ? '' : '-webkit-transform-origin: 50% 0% 0;transform-origin: 50% 0% 0;' }
   }
-/* 我开始写了 */
+/* 开始写信 */
 
 
 `,
-                `
-/* 是不是看着很简陋粗糙？
- * 因为这是 Markdown 格式的
- * 一种程序员用来写文档日志的简易语言
- * 翻译成 网页 就行了
+                                `
+/* 这是 Markdown 格式
+ * 让文字更像一封信
+ * 也方便排版
  */
 `,
                 `
@@ -125,6 +131,10 @@ html{
 .resumeEditor{
   padding: 2em;
   line-height:1.8;
+    background: rgba(253, 246, 227, 0.92);
+    border-color: rgba(0,0,0,.25);
+    border-radius: 12px;
+    box-shadow: 0 10px 26px rgba(0,0,0,.18);
 }
 .resumeEditor h2{
   display: inline-block;
@@ -153,93 +163,178 @@ html{
   background: rgba(221,221,221,.5);
 }
 
-/* OK。完成！ */
+/* 相册区域 */
+.gallery {
+    margin-top: 1.8em;
+}
+.gallery-title {
+    font-size: 18px;
+    margin: 0 0 .2em;
+}
+.gallery-subtitle {
+    margin: 0 0 1em;
+    color: #555;
+}
+.gallery-stage {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    background: radial-gradient(circle at 20% 20%, #222, #0e0e0e 60%, #070707);
+    box-shadow: 0 12px 30px rgba(0,0,0,.25);
+    height: 360px;
+    max-height: 52vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+.gallery-main {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    border-radius: 10px;
+}
+.gallery-indicators {
+    position: absolute;
+    right: 12px;
+    bottom: 10px;
+    display: flex;
+    gap: 6px;
+    background: rgba(0,0,0,.35);
+    padding: 6px 8px;
+    border-radius: 999px;
+}
+.gallery-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.5);
+}
+.gallery-dot.is-active {
+    background: #fff;
+}
+.gallery-thumbs {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 8px;
+}
+.gallery-thumb-button {
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+.gallery-thumb {
+    width: 100%;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: transform .2s, box-shadow .2s, filter .2s;
+    filter: grayscale(.1) brightness(.95);
+}
+.gallery-thumb-button.is-active .gallery-thumb {
+    filter: none;
+    transform: scale(1.02);
+    box-shadow: 0 6px 18px rgba(0,0,0,.25);
+    outline: 2px solid #f7b500;
+    outline-offset: 1px;
+}
+@media (max-width: 768px) {
+    .resumeEditor{
+        padding: 1.2em;
+    }
+    .gallery-stage {
+        height: 240px;
+        max-height: 45vh;
+    }
+}
+
+/* 完成,请慢慢看 */
 
 `
             ],
             currentMarkdown: '',
-            fullMarkdown: `nostar × juanjuan
+            fullMarkdown: `Sunny & Me
 ----
 
-2016年08月05日。初初见面。两人齐齐心动。  
-2016年09月15日。即中秋节阴历八月十五。在一起。  
-已有 \`${getDateDiff((new Date()).getFullYear()+'-'+((new Date()).getMonth()+1)+'-'+(new Date()).getDate(),'2016-09-15') + 1}\` 天
+今天是 ${new Date().getFullYear()}年${(new Date().getMonth() + 1)}月${new Date().getDate()}日。  
+我们认识于 2025年08月02日,xhs中sunny的评论区里。
+到今天，已经认识 \`${getDateDiff((new Date()).getFullYear()+'-'+((new Date()).getMonth()+1)+'-'+(new Date()).getDate(), meetDate) + 1}\` 天
 
-一起呲过的餐厅
+we are 异地恋ing 
+距离把见面变得更珍贵，也把想念变得更具体。
+
+我们一起看过的电影
 ----
 
-* 昂吉拉姆西藏餐厅
-* 漫族餐厅
-* 鑫海汇海鲜烧烤
-* 老长沙罐子楼
-* 锅大侠火锅
-* 西湖春天
-* 天意
-* 曼玉
-* 王婆爱上虾
-* 十里洋场
-* 城墙根
-* 爱芳爱德
-* 阳光小店
-* 夜小红虾尾
-* 57°湘
-* 名厨味道
-* 老成都串串
-* 菜捕头
-* 知味观
-* 花港海航度假酒店
-* 冰城烧烤
-* ……
+1. 疯狂动物城2
+2. La La Land
 
-一起看过的电影
+我们想一起去的地方，希望我们有一天能全部去一遍，我们还要继续添加心愿清单
+----
+1. 武汉
+2. 杭州
+3. 南京
+4. 新疆
+5. 加州
+6. 冰岛
+
+他们说相片是人类已知唯一的穿越时间的工具，当看到一张照片的时候，我们就能实现一次时空穿梭！
 ----
 
-1. 七月与安生
-2. 从你的全世界路过
-3. 驴得水
-4. 深海浩劫
-5. 湄公河行动
-6. 你的名字。
-7. 速度与激情8
-8. 战狼2
-9. 敦刻尔克
-10. 正义联盟
-11. 极盗车神
-12. ……
-13. 流浪地球
-14. 飞驰人生
-15. 新喜剧之王
-16. 来电狂响
-17. 疯狂的外星人
-18. 熊出没之原始时代
-19. ……
+滑动的照片，每一张我们都比前一张的时候更亲密！
 
-一起玩过的地方
-----
+> 异地恋也没关系，我们一直在同一条路上。
 
-* 登封少林寺
-* 洛阳
-* 圣王坪
-* 大临淇
-* 皇城相府
-* 杭州西湖
-* ……
-
-一起玩过的游戏
-----
-
-1. 炉石传说
-2. 塞尔达传说-荒野之息
-3. 魂斗罗归来
-4. 马里奥奥德赛
-5. 欢乐麻将
-6. overcooked
-7. ……
-
-> 【Screw the world×I have my dear Juanjuan】  
-> 喂。我不只想影响你的习惯。我还要去改变你的人生。！
-
-`
+`,
+            galleryTitle: '我和Sunny 的相册',
+            gallerySubtitle: '自动播放 · 点击缩略图可切换',
+            photoNames: [
+                'Weixin Image_20260214165517_65_10.jpg',
+                'Weixin Image_20260214165518_66_10.jpg',
+                'Weixin Image_20260214165518_67_10.jpg',
+                'Weixin Image_20260214165519_68_10.jpg',
+                'Weixin Image_20260214165520_69_10.jpg',
+                'Weixin Image_20260214165521_70_10.jpg',
+                'Weixin Image_20260214165522_71_10.jpg',
+                'Weixin Image_20260214165523_72_10.jpg',
+                'Weixin Image_20260214165524_73_10.jpg',
+                'Weixin Image_20260214165524_74_10.jpg',
+                'Weixin Image_20260214165525_75_10.jpg',
+                'Weixin Image_20260214165526_76_10.jpg',
+                'Weixin Image_20260214165527_77_10.jpg',
+                'Weixin Image_20260214165528_78_10.jpg',
+                'Weixin Image_20260214165528_79_10.jpg',
+                'Weixin Image_20260214165529_80_10.jpg',
+                'Weixin Image_20260214165530_81_10.jpg',
+                'Weixin Image_20260214165531_82_10.jpg',
+                'Weixin Image_20260214165531_83_10.jpg',
+                'Weixin Image_20260214165532_84_10.jpg',
+                'Weixin Image_20260214165533_85_10.jpg',
+                'Weixin Image_20260214165646_86_10.jpg',
+                'Weixin Image_20260214165647_87_10.jpg',
+                'Weixin Image_20260214165648_88_10.jpg',
+                'Weixin Image_20260214165649_89_10.jpg',
+                'Weixin Image_20260214165650_90_10.jpg',
+                'Weixin Image_20260214165653_91_10.jpg',
+                'Weixin Image_20260214165654_92_10.jpg',
+                'Weixin Image_20260214165655_93_10.jpg',
+                'Weixin Image_20260214165656_94_10.jpg',
+                'Weixin Image_20260214165657_95_10.jpg',
+                'Weixin Image_20260214165658_96_10.jpg',
+                'Weixin Image_20260214165659_97_10.jpg',
+                'Weixin Image_20260214165701_98_10.jpg',
+                'Weixin Image_20260214165702_99_10.jpg',
+                'Weixin Image_20260214165704_100_10.jpg',
+                'Weixin Image_20260214165705_101_10.jpg',
+                'Weixin Image_20260214165707_102_10.jpg',
+                'Weixin Image_20260214165816_103_10.jpg',
+                'Weixin Image_20260214165817_104_10.jpg',
+                'Weixin Image_20260214165818_105_10.jpg',
+                'Weixin Image_20260214165818_106_10.jpg'
+            ]
         }
     },
     created() {
